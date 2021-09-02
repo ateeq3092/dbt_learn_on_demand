@@ -1,5 +1,3 @@
-{{ config(materialized='view') }}
-
 WITH customers as (
     select * from {{ ref('stg_customers')}}
 ),

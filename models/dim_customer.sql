@@ -1,26 +1,11 @@
 {{ config(materialized='view') }}
 
-with customers as (
-
-    select
-        id as customer_id,
-        first_name,
-        last_name
-
-    from AteeqTest.jaffle_shop.customers
-
+WITH customers as (
+    select * from {{ ref('stg_customers')}}
 ),
 
 orders as (
-
-    select
-        id as order_id,
-        user_id as customer_id,
-        order_date,
-        status
-
-    from AteeqTest.jaffle_shop.orders
-
+    select * from {{ ref('stg_orders') }}
 ),
 
 customer_orders as (
@@ -38,21 +23,21 @@ customer_orders as (
 
 ),
 
+
 final as (
 
     select
         customers.customer_id,
         customers.first_name,
         customers.last_name,
-        co.first_order_date,
-        co.most_recent_order_date,
-        coalesce(co.number_of_orders, 0) as number_of_orders
+        customer_orders.first_order_date,
+        customer_orders.most_recent_order_date,
+        coalesce(customer_orders.number_of_orders, 0) as number_of_orders
 
     from customers
 
-    left join customer_orders co on co.customer_id = customers.customer_id
+    left join customer_orders using (customer_id)
 
 )
 
- select * from final
-
+select * from final

@@ -18,4 +18,4 @@ with source_data as (
 
 select *
 from source_data
-WHERE ID is not null
+-- WHERE ID is not null
